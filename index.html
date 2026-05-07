@@ -1,0 +1,287 @@
+export default function IncheonAirportFlightTracker() {
+  const flights = [
+    {
+      id: 'KE085',
+      airline: 'Korean Air',
+      aircraft: 'Boeing 777-300ER',
+      departure: 'Incheon (ICN)',
+      arrival: 'New York (JFK)',
+      status: '운항 중',
+      altitude: '34,000 ft',
+      speed: '905 km/h',
+      position: '태평양 상공'
+    },
+    {
+      id: 'OZ102',
+      airline: 'Asiana Airlines',
+      aircraft: 'Airbus A350-900',
+      departure: 'Tokyo (NRT)',
+      arrival: 'Incheon (ICN)',
+      status: '착륙 예정',
+      altitude: '12,000 ft',
+      speed: '520 km/h',
+      position: '서해 상공'
+    },
+    {
+      id: 'LJ021',
+      airline: 'Jin Air',
+      aircraft: 'Boeing 737-800',
+      departure: 'Incheon (ICN)',
+      arrival: 'Jeju (CJU)',
+      status: '탑승 중',
+      altitude: '-',
+      speed: '-',
+      position: '제1터미널 게이트 24'
+    }
+  ];
+
+  const [query, setQuery] = React.useState('');
+  const [nightMode, setNightMode] = React.useState(true);
+  const [musicMode, setMusicMode] = React.useState(false);
+  const [selectedFlight, setSelectedFlight] = React.useState(flights[0]);
+
+  const filteredFlights = flights.filter(
+    (flight) =>
+      flight.id.toLowerCase().includes(query.toLowerCase()) ||
+      flight.aircraft.toLowerCase().includes(query.toLowerCase()) ||
+      flight.airline.toLowerCase().includes(query.toLowerCase())
+  );
+
+  React.useEffect(() => {
+    if (filteredFlights.length > 0) {
+      setSelectedFlight(filteredFlights[0]);
+    }
+  }, [query]);
+
+  return (
+    <div
+      className={`min-h-screen transition-all duration-500 ${
+        nightMode
+          ? 'bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950 text-white'
+          : 'bg-gradient-to-b from-sky-100 via-white to-cyan-100 text-slate-900'
+      }`}
+    >
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[radial-gradient(circle_at_top,_rgba(0,191,255,0.4),transparent_60%)]"></div>
+      </div>
+
+      <header className="relative z-10 border-b border-cyan-400/20 backdrop-blur-md bg-black/20">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-black tracking-wide text-cyan-300">
+              INCHEON SKY TRACKER
+            </h1>
+            <p className="text-sm opacity-80 mt-1">
+              인천국제공항 여객기 운항 현황 시스템
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setNightMode(!nightMode)}
+              className="px-4 py-2 rounded-2xl bg-cyan-500/20 border border-cyan-300/30 hover:scale-105 transition"
+            >
+              {nightMode ? '☀️ 주간 모드' : '🌙 야간 모드'}
+            </button>
+
+            <button
+              onClick={() => setMusicMode(!musicMode)}
+              className={`px-4 py-2 rounded-2xl border transition ${
+                musicMode
+                  ? 'bg-pink-500/30 border-pink-300 text-pink-100'
+                  : 'bg-white/10 border-white/20'
+              }`}
+            >
+              {musicMode ? '🎵 음악 ON' : '🔇 음악 OFF'}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid lg:grid-cols-3 gap-6">
+        <section className="lg:col-span-1 space-y-5">
+          <div className="rounded-3xl p-5 backdrop-blur-xl bg-white/10 border border-white/10 shadow-2xl">
+            <h2 className="text-xl font-bold mb-4">✈️ 여객기 검색</h2>
+
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="항공편명 / 기종 / 항공사 입력"
+              className="w-full px-4 py-3 rounded-2xl bg-black/30 border border-cyan-400/30 outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
+
+          <div className="rounded-3xl p-5 backdrop-blur-xl bg-white/10 border border-white/10 shadow-2xl h-[600px] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">📡 실시간 운항 목록</h2>
+
+            <div className="space-y-4">
+              {filteredFlights.map((flight) => (
+                <button
+                  key={flight.id}
+                  onClick={() => setSelectedFlight(flight)}
+                  className={`w-full text-left rounded-2xl p-4 transition hover:scale-[1.02] ${
+                    selectedFlight.id === flight.id
+                      ? 'bg-cyan-400/20 border border-cyan-300'
+                      : 'bg-black/20 border border-white/10'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-lg">{flight.id}</div>
+                      <div className="text-sm opacity-80">{flight.airline}</div>
+                    </div>
+
+                    <div className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/20">
+                      {flight.status}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 text-sm opacity-90">
+                    {flight.departure} → {flight.arrival}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="lg:col-span-2 space-y-6">
+          <div className="rounded-3xl overflow-hidden border border-cyan-300/20 bg-white/10 backdrop-blur-xl shadow-2xl">
+            <div className="relative h-[420px] bg-gradient-to-br from-blue-950 via-slate-900 to-cyan-950 overflow-hidden">
+              <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop')] bg-cover bg-center"></div>
+
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  <div className="absolute -inset-8 rounded-full bg-cyan-400/20 blur-3xl animate-pulse"></div>
+
+                  <div className="text-8xl animate-bounce">✈️</div>
+                </div>
+              </div>
+
+              <div className="absolute bottom-5 left-5 right-5 grid md:grid-cols-4 gap-3">
+                <div className="rounded-2xl bg-black/40 backdrop-blur-lg p-4 border border-white/10">
+                  <div className="text-xs opacity-70">항공편</div>
+                  <div className="text-lg font-bold">{selectedFlight.id}</div>
+                </div>
+
+                <div className="rounded-2xl bg-black/40 backdrop-blur-lg p-4 border border-white/10">
+                  <div className="text-xs opacity-70">현재 위치</div>
+                  <div className="text-lg font-bold">{selectedFlight.position}</div>
+                </div>
+
+                <div className="rounded-2xl bg-black/40 backdrop-blur-lg p-4 border border-white/10">
+                  <div className="text-xs opacity-70">고도</div>
+                  <div className="text-lg font-bold">{selectedFlight.altitude}</div>
+                </div>
+
+                <div className="rounded-2xl bg-black/40 backdrop-blur-lg p-4 border border-white/10">
+                  <div className="text-xs opacity-70">속도</div>
+                  <div className="text-lg font-bold">{selectedFlight.speed}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="rounded-3xl p-6 bg-white/10 border border-white/10 backdrop-blur-xl shadow-2xl">
+              <h3 className="text-2xl font-bold mb-5">🛫 운항 상세 정보</h3>
+
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="opacity-70">항공사</span>
+                  <span className="font-semibold">{selectedFlight.airline}</span>
+                </div>
+
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="opacity-70">기종</span>
+                  <span className="font-semibold">{selectedFlight.aircraft}</span>
+                </div>
+
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="opacity-70">출발지</span>
+                  <span className="font-semibold">{selectedFlight.departure}</span>
+                </div>
+
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="opacity-70">목적지</span>
+                  <span className="font-semibold">{selectedFlight.arrival}</span>
+                </div>
+
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="opacity-70">운항 상태</span>
+                  <span className="font-semibold text-emerald-300">
+                    {selectedFlight.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl p-6 bg-white/10 border border-white/10 backdrop-blur-xl shadow-2xl">
+              <h3 className="text-2xl font-bold mb-5">🎧 공항 모드 시스템</h3>
+
+              <div className="space-y-5">
+                <div className="rounded-2xl p-4 bg-black/20 border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">야간 활주로 모드</div>
+                      <div className="text-xs opacity-70 mt-1">
+                        인천공항 야경 느낌의 UI 적용
+                      </div>
+                    </div>
+
+                    <div className="text-2xl">
+                      {nightMode ? '🌌' : '☀️'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl p-4 bg-black/20 border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">공항 음악 모드</div>
+                      <div className="text-xs opacity-70 mt-1">
+                        잔잔한 공항 라운지 BGM 재생
+                      </div>
+                    </div>
+
+                    <div className="text-2xl">
+                      {musicMode ? '🎵' : '🔈'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl p-4 bg-black/20 border border-white/10">
+                  <div className="font-semibold mb-2">추천 추가 기능</div>
+
+                  <ul className="space-y-2 text-sm opacity-90">
+                    <li>• 실시간 항공 API 연동</li>
+                    <li>• 지도 기반 항공기 추적</li>
+                    <li>• 활주로 상태 표시</li>
+                    <li>• 실시간 날씨 정보</li>
+                    <li>• 터미널 혼잡도 표시</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="relative z-10 border-t border-white/10 mt-10">
+        <div className="max-w-7xl mx-auto px-6 py-5 text-center text-sm opacity-70">
+          Incheon International Airport Inspired Flight Tracking Experience
+        </div>
+      </footer>
+
+      {musicMode && (
+        <audio autoPlay loop>
+          <source
+            src="https://cdn.pixabay.com/audio/2022/03/15/audio_ba4b63b2fd.mp3"
+            type="audio/mpeg"
+          />
+        </audio>
+      )}
+    </div>
+  );
+}
